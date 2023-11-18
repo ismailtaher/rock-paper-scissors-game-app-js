@@ -7,8 +7,11 @@ const initApp = () => {
   // update scoreboard
   updateScoreBoard();
   // listen for a player choice
+  listenForPlayerChoice();
   // listen enter key
+  listenForEnterKey();
   // listen for play again
+  listenForPlayAgain();
   // lock in gameboard height
   // set focus to start new game
 };
@@ -60,6 +63,28 @@ const listenForPlayerChoice = () => {
   });
 };
 
+const listenForEnterKey = () => {
+  window.addEventListener("keydown", (event) => {
+    if (event.code === "Enter" && event.target.tagName === "IMG") {
+      event.target.click();
+    }
+  });
+};
+
+const listenForPlayAgain = () => {
+  document.querySelector("form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    resetBoard(); //TODO:
+  });
+};
+
+const lockComputerGameBoardHeight = () => {
+  const cpGameBoard = document.querySelector(".computerBoard .gameboard");
+  const cpGBStyles = getComputedStyle(cpGameBoard);
+};
+
 const updateP1Message = (choice) => {
   let p1msg = document.getElementById("p1msg").textContent;
+  p1msg += ` ${choice[0].toUpperCase()}${choice.slice(1)}!`;
+  document.getElementById("p1msg").textContent = p1msg;
 };

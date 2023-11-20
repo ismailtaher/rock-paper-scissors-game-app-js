@@ -13,7 +13,9 @@ const initApp = () => {
   // listen for play again
   listenForPlayAgain();
   // lock in gameboard height
+  lockComputerGameBoardHeight();
   // set focus to start new game
+  document.querySelector("h1").focus();
 };
 
 document.addEventListener("DOMContentLoaded", initApp);
@@ -58,7 +60,7 @@ const listenForPlayerChoice = () => {
           img.parentElement.classList.add("not-selected");
         }
       });
-      // animation
+      computerAnimationSequence(playerChoice);
     });
   });
 };
@@ -81,10 +83,26 @@ const listenForPlayAgain = () => {
 const lockComputerGameBoardHeight = () => {
   const cpGameBoard = document.querySelector(".computerBoard .gameboard");
   const cpGBStyles = getComputedStyle(cpGameBoard);
+  const height = cpGBStyles.getPropertyValue("height");
+  cpGameBoard.style.minHeight = height;
 };
 
 const updateP1Message = (choice) => {
   let p1msg = document.getElementById("p1msg").textContent;
   p1msg += ` ${choice[0].toUpperCase()}${choice.slice(1)}!`;
   document.getElementById("p1msg").textContent = p1msg;
+};
+
+const computerAnimationSequence = (playerChoice) => {
+  let interval = 1000;
+  setTimeout(() => computerChoiceAnimation("cp_rock", 1), interval);
+  setTimeout(() => computerChoiceAnimation("cp_paper", 2), (interval += 500));
+};
+
+const computerChoiceAnimation = (elementId, number) => {
+  const element = document.getElementById(elementId);
+  element.firstElementChild.remove();
+  const p = document.createElement("p");
+  p.textContent = number;
+  element.appendChild(p);
 };

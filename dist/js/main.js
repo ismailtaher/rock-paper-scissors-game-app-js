@@ -76,7 +76,7 @@ const listenForEnterKey = () => {
 const listenForPlayAgain = () => {
   document.querySelector("form").addEventListener("submit", (e) => {
     e.preventDefault();
-    resetBoard(); //TODO:
+    resetBoard();
   });
 };
 
@@ -89,7 +89,7 @@ const lockComputerGameBoardHeight = () => {
 
 const updateP1Message = (choice) => {
   let p1msg = document.getElementById("p1msg").textContent;
-  p1msg += ` ${choice[0].toUpperCase()}${choice.slice(1)}!`;
+  p1msg += ` ${properCase(choice)}!`;
   document.getElementById("p1msg").textContent = p1msg;
 };
 
@@ -97,6 +97,16 @@ const computerAnimationSequence = (playerChoice) => {
   let interval = 1000;
   setTimeout(() => computerChoiceAnimation("cp_rock", 1), interval);
   setTimeout(() => computerChoiceAnimation("cp_paper", 2), (interval += 500));
+  setTimeout(
+    () => computerChoiceAnimation("cp_scissors", 3),
+    (interval += 500)
+  );
+  setTimeout(() => countdownFade(), (interval += 750));
+  setTimeout(() => {
+    deleteCountdown();
+    finishGameFlow(playerChoice);
+  }, (interval += 1000));
+  setTimeout(() => askUserToPlayAgain(), (interval += 1000));
 };
 
 const computerChoiceAnimation = (elementId, number) => {
@@ -105,4 +115,119 @@ const computerChoiceAnimation = (elementId, number) => {
   const p = document.createElement("p");
   p.textContent = number;
   element.appendChild(p);
+};
+
+const countdownFade = () => {
+  const countdown = document.querySelectorAll(
+    ".computerBoard .gameboard__square p"
+  );
+  countdown.forEach((el) => {
+    el.className = "fadeOut";
+  });
+};
+
+const deleteCountdown = () => {
+  const countdown = document.querySelectorAll(
+    ".computerBoard .gameboard__square p"
+  );
+  countdown.forEach((el) => {
+    el.remove();
+  });
+};
+
+const finishGameFlow = (playerChoice) => {
+  const computerChoice = getComputerChoice();
+  const winner = determineWinner(playerChoice, computerChoice);
+  const actionMessage = buildActionMessage(
+    winner,
+    playerChoice,
+    computerChoice
+  );
+  displayActionMessage(actionMessage);
+  // update aria with result
+  // update score state
+  // update persistent data
+  // update scoreboard
+  // update winner message
+  // display computer choice
+};
+
+const getComputerChoice = () => {
+  const randomNumber = Math.floor(Math.random() * 3);
+  const rpsArray = ["rock", "paper", "scissors"];
+  return rpsArray[randomNumber];
+};
+
+const determineWinner = (player, computer) => {
+  if (player === computer) return "tie";
+  if (
+    (player === "rock" && computer === "paper") ||
+    (player === "paper" && computer === "scissors") ||
+    (player === "scissors" && computer === "rock")
+  )
+    return "computer";
+  return "player";
+};
+
+const buildActionMessage = (winner, playerChoice, computerChoice) => {
+  if (winner === "tie") return "Tie Game!";
+  if (winner === "computer") {
+    const action = getAction(computerChoice);
+    return `${properCase(computerChoice)} ${action} ${properCase(
+      playerChoice
+    )}.`;
+  } else {
+    const action = getAction(playerChoice);
+    return `${properCase(playerChoice)} ${action} ${properCase(
+      computerChoice
+    )}.`;
+  }
+};
+
+const getAction = (choice) => {
+  return choice === "rock" ? "smashes" : choice === "paper" ? "wraps" : "cuts";
+};
+
+const properCase = (string) => {
+  return `${string[0].toUpperCase()}${string.slice(1)}`;
+};
+
+const displayActionMessage = (actionMessage) => {
+  const cpmsg = document.getElementById("playAgain");
+  cpmsg.textContent = actionMessage;
+};
+
+const askUserToPlayAgain = () => {
+  const playAgain = document.getElementById("playAgain");
+  playAgain.classList.toggle("hidden");
+  playAgain.focus();
+};
+
+const resetBoard = () => {
+  const gameSquare = document.querySelectorAll(".gameboard div");
+  gameSquare.forEach((el) => {
+    el.className = "gameboard__square";
+  });
+  const cpSquare = document.querySelectorAll(
+    ".computerBoard .gameboard__square"
+  );
+  cpSquare.forEach((el) => {
+    if (el.firstElementChild) el.firstElementChild.remove();
+    if (el.id === "cp__rock") createGameImage("rock", el);
+    if (el.id === "cp__paper") createGameImage("paper", el);
+    if (el.id === "cp__scissors") createGameImage("scissors", el);
+  });
+  document.getElementById("p1msg").textContent = "Player One Chooses";
+  document.getElementById("cpmsg").textContent = "Computer Chooses";
+  const ariaResult = document.getElementById("playAgain");
+  ariaResult.ariaLabel = "Player One Chooses";
+  document.getElementById("p1msg").focus();
+  document.getElementById("playAgain").classList.toggle("hidden");
+  Game.endGame();
+};
+
+const createGameImage = (icon, appendToElement) => {
+  const image = document.createElement("img");
+  image.src = `img/${icon}.png`;
+  appendToElement.appendChild(image);
 };

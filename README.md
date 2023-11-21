@@ -4,7 +4,7 @@ Rock Paper Scissors Game
 
 Welcome to the Rock Paper Scissors Game! This simple web-based game allows users to play the classic Rock Paper Scissors against a computer opponent.
 
-![Sequence 01_2](https://github.com/ismailtaher/rock-paper-scissors-game-app-js/assets/57496063/6e58967e-fd60-4f9d-bf2e-2734ea5d7166)
+![Sequence 01](https://github.com/ismailtaher/rock-paper-scissors-game-app-js/assets/57496063/f03e2767-a34b-44c0-a332-be81fbfafec4)
 
 
 Features
